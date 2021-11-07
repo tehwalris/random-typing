@@ -1,0 +1,40 @@
+{
+  "name": "random-typing",
+  "version": "0.1.0",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@emotion/css": "^11.1.3",
+    "@types/jest": "^26.0.24",
+    "@types/node": "^16.3.2",
+    "@types/ramda": "^0.27.44",
+    "@types/react": "^17.0.14",
+    "@types/react-dom": "^17.0.9",
+    "ramda": "^0.27.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-scripts": "4.0.3",
+    "typescript": "~4.3.5",
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      "last 5 chrome version",
+      "last 5 firefox version",
+      "safari >= 13"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
