@@ -1,7 +1,22 @@
-import * as React from "react";
-import { shuffle, sample } from "lodash";
+import { css } from "@emotion/css";
+import { sample, shuffle } from "lodash";
 import { zip } from "ramda";
-import { useMemo, useState } from "react";
+import * as React from "react";
+import { useMemo } from "react";
+
+const styles = {
+  typingArea: css`
+    display: inline-block;
+
+    &:focus {
+      outline: 1px solid blue;
+    }
+
+    &:not(:focus) {
+      opacity: 0.5;
+    }
+  `,
+};
 
 const enabledKeys = [
   "KeyA",
@@ -43,6 +58,9 @@ export const App = () => {
     <div>
       <div>{JSON.stringify([...randomLayout.entries()])}</div>
       <div>Expected: {expectedLetter}</div>
+      <div tabIndex={0} className={styles.typingArea}>
+        Type here
+      </div>
     </div>
   );
 };
