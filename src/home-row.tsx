@@ -16,9 +16,11 @@ const styles = {
 
 interface Props {
   letters: string[];
+  expectedLetter: string;
+  pressedLetter: string | undefined;
 }
 
-export const HomeRow = ({ letters }: Props) => {
+export const HomeRow = ({ letters, expectedLetter, pressedLetter }: Props) => {
   if (letters.length !== 10) {
     throw new Error("unexpected number of letters");
   }
@@ -32,7 +34,18 @@ export const HomeRow = ({ letters }: Props) => {
       ].map(([start, end], i) => (
         <div key={i} className={styles.group}>
           {letters.slice(start, end).map((letter, j) => (
-            <div key={j + start} className={styles.key}>
+            <div
+              key={j + start}
+              className={styles.key}
+              style={{
+                background:
+                  letter === pressedLetter
+                    ? "grey"
+                    : letter === expectedLetter
+                    ? "green"
+                    : undefined,
+              }}
+            >
               {letter}
             </div>
           ))}
