@@ -3,6 +3,7 @@ import { sample, shuffle } from "lodash";
 import { zip } from "ramda";
 import * as React from "react";
 import { useMemo, useState } from "react";
+import { HomeRow } from "./home-row";
 
 const styles = {
   typingArea: css`
@@ -80,6 +81,7 @@ export const App = () => {
   return (
     <div>
       <div>{JSON.stringify([...randomLayout.entries()])}</div>
+      <HomeRow letters={enabledKeys.map((k) => randomLayout.get(k)!)} />
       <div>Expected: {expectedLetter}</div>
       <div>Pressed: {pressedLetter}</div>
       <div tabIndex={0} className={styles.typingArea} onKeyDown={onKeyDown}>
