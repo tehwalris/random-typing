@@ -1,0 +1,70 @@
+Arguments: 
+  /nix/store/n3p8r76d8l4r7qfs4sc5z3pk2ipjlh7l-nodejs-14.17.6/bin/node /nix/store/56a770082b8zmcjdj8ycblx8sdivkmdx-yarn-1.22.11/bin/yarn
+
+PATH: 
+  /nix/store/w07a7k61dw5gnsyxj3kgcq3shr76jax8-bash-interactive-4.4-p23/bin:/nix/store/n3p8r76d8l4r7qfs4sc5z3pk2ipjlh7l-nodejs-14.17.6/bin:/nix/store/56a770082b8zmcjdj8ycblx8sdivkmdx-yarn-1.22.11/bin:/nix/store/435paza0j48aa9vgvf6r2l12nrg4ld11-patchelf-0.12/bin:/nix/store/4xs1xyj8728yvh9y5v6ji819kwgfy2fv-gcc-wrapper-10.3.0/bin:/nix/store/dlni53myj53kx20pi4yhm7p68lw17b07-gcc-10.3.0/bin:/nix/store/6z35qvn00xrjvaznv9kfy8xddbbdz4gl-glibc-2.33-47-bin/bin:/nix/store/1570w56jrkvr90w9x158vyb5vahnk18v-coreutils-8.32/bin:/nix/store/29bjq5hw1qglybp1a5f3ij9gxc2fyf94-binutils-wrapper-2.35.1/bin:/nix/store/v8imx1nvyz0hgvx9cbcmh6gp4ngw3ffj-binutils-2.35.1/bin:/nix/store/1570w56jrkvr90w9x158vyb5vahnk18v-coreutils-8.32/bin:/nix/store/ihxk2vlm0vi7c4j3gpm084kbxvz6v585-findutils-4.8.0/bin:/nix/store/kjx1mv85c5cgsrr4bwar22j7hbwj834m-diffutils-3.7/bin:/nix/store/gm2w08wwsa3vd500d8vq879s2lv65ldh-gnused-4.8/bin:/nix/store/v0slhpb2y3xa7gmv4q6gblkdk7n0f09j-gnugrep-3.6/bin:/nix/store/2wn093wbc6ps4brcsppxjd14vxvaa8a2-gawk-5.1.0/bin:/nix/store/5bxrjkyvqmzn1p897652y3lwa9fxagpw-gnutar-1.34/bin:/nix/store/liva1jnjdskrn57s42kfawr2zz66szzm-gzip-1.10/bin:/nix/store/ih2zkh2mbrx2c766ryk2i9hhlkly7snr-bzip2-1.0.6.0.2-bin/bin:/nix/store/pvkiiw0mp1yx0b21b7k105yywccychgh-gnumake-4.3/bin:/nix/store/dpjnjrqbgbm8a5wvi1hya01vd8wyvsq4-bash-4.4-p23/bin:/nix/store/aicl3kwfnaizk45aygm8bviqv7lk0a16-patch-2.7.6/bin:/nix/store/7jk6k46f56rszzc1bxi8mdrvcw53pym4-xz-5.2.5-bin/bin:/run/wrappers/bin:/home/philippe/.nix-profile/bin:/etc/profiles/per-user/philippe/bin:/nix/var/nix/profiles/default/bin:/run/current-system/sw/bin
+
+Yarn version: 
+  1.22.11
+
+Node version: 
+  14.17.6
+
+Platform: 
+  linux x64
+
+Trace: 
+  SyntaxError: /home/philippe/a/src/github.com/tehwalris/random-typing/package.json: Unexpected token } in JSON at position 437
+      at JSON.parse (<anonymous>)
+      at /nix/store/56a770082b8zmcjdj8ycblx8sdivkmdx-yarn-1.22.11/libexec/yarn/lib/cli.js:1625:59
+      at Generator.next (<anonymous>)
+      at step (/nix/store/56a770082b8zmcjdj8ycblx8sdivkmdx-yarn-1.22.11/libexec/yarn/lib/cli.js:310:30)
+      at /nix/store/56a770082b8zmcjdj8ycblx8sdivkmdx-yarn-1.22.11/libexec/yarn/lib/cli.js:321:13
+
+npm manifest: 
+  {
+    "name": "random-typing",
+    "version": "0.1.0",
+    "license": "MIT",
+    "private": true,
+    "dependencies": {
+      "@emotion/css": "^11.1.3",
+      "@types/jest": "^26.0.24",
+      "@types/node": "^16.3.2",
+      "@types/ramda": "^0.27.44",
+      "@types/react": "^17.0.14",
+      "@types/react-dom": "^17.0.9",
+      "ramda": "^0.27.1",
+      "react": "^17.0.2",
+      "react-dom": "^17.0.2",
+      "react-scripts": "4.0.3",
+      "typescript": "~4.3.5",
+    },
+    "scripts": {
+      "start": "react-scripts start",
+      "build": "react-scripts build",
+      "test": "react-scripts test",
+      "eject": "react-scripts eject"
+    },
+    "eslintConfig": {
+      "extends": "react-app"
+    },
+    "browserslist": {
+      "production": [
+        "last 5 chrome version",
+        "last 5 firefox version",
+        "safari >= 13"
+      ],
+      "development": [
+        "last 1 chrome version",
+        "last 1 firefox version",
+        "last 1 safari version"
+      ]
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
