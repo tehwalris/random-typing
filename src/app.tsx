@@ -62,15 +62,31 @@ for (let i = "a".charCodeAt(0); i <= "z".charCodeAt(0); i++) {
 const streakToHide = 3;
 const streakToWin = 10;
 
-function pickRandomMapEntry<K, V>(
-  map: Map<K, V>,
-  filterCb: (entry: [K, V]) => boolean,
-): [K, V] {
-  const entries = [...map.entries()].filter(filterCb);
-  if (!entries.length) {
-    throw new Error("empty filtered map");
+function pickMaskWeightedEntry(
+  layout: Map<string, string>,
+  mask: boolean[],
+  lastKey: string | undefined,
+): [string, string] {
+  const entryFromKey = (k: string): [string, string] => {
+    const v = layout.get(k);
+    if (v === undefined) {
+      throw new Error("layout is not consistent with enabledKeys");
+    }
+    return [k, v];
+  };
+
+  const options = enabledKeys
+    .filter((k) => k !== lastKey)
+    .map((k, i) => ({ k, maskValue: mask[i] }));
+  const trueOptions = options.filter((o) => o.maskValue);
+  const falseOptions = options.filter((o) => !o.maskValue);
+  if (!trueOptions.length || !falseOptions.length) {
+    return entryFromKey(sample(options)!.k);
   }
-  return sample(entries)!;
+  const trueProbability = 0.5;
+  const chosenBooleanOptions =
+    Math.random() < trueProbability ? trueOptions : falseOptions;
+  return entryFromKey(sample(chosenBooleanOptions)!.k);
 }
 
 export const App = () => {
@@ -84,14 +100,18 @@ export const App = () => {
     () =>
       _expectedLetter && new Set(randomLayout.values()).has(_expectedLetter)
         ? _expectedLetter
-        : pickRandomMapEntry(randomLayout, () => true)[1],
+        : pickMaskWeightedEntry(
+            randomLayout,
+            enabledKeys.map(() => false),
+            undefined,
+          )[1],
     [_expectedLetter, randomLayout],
   );
 
   const [mask, setMask] = useState(() => enabledKeys.map(() => false));
-
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   useEffect(() => {
+    setMask(enabledKeys.map(() => false));
     setHistory([]);
   }, [randomLayout]);
   const pressedLetter = last(history)?.actualLetter;
@@ -136,7 +156,7 @@ export const App = () => {
 
     if (actualLetter === expectedLetter) {
       _setExpectedLetter(
-        pickRandomMapEntry(randomLayout, ([_c, l]) => l !== actualLetter)[1],
+        pickMaskWeightedEntry(randomLayout, newMask, ev.code)[1],
       );
     }
   };

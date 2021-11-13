@@ -62,10 +62,10 @@ export const HomeRow = ({
                 className={styles.key}
                 style={{
                   background:
-                    letter === pressedLetter
-                      ? "rgba(0, 0, 0, 0.15)"
-                      : letter === expectedLetter && !hide
+                    letter === expectedLetter && !hide
                       ? "rgba(0, 20, 255, 0.4)"
+                      : letter === pressedLetter
+                      ? "rgba(0, 0, 0, 0.15)"
                       : undefined,
                 }}
               >
