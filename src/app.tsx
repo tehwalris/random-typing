@@ -1,8 +1,8 @@
 import { css } from "@emotion/css";
 import { sample, shuffle } from "lodash";
-import { zip } from "ramda";
+import { zip, last } from "ramda";
 import * as React from "react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { HomeRow } from "./home-row";
 
 const styles = {
@@ -63,18 +63,48 @@ export const App = () => {
     [_expectedLetter, randomLayout],
   );
 
-  const [pressedLetter, setPressedLetter] = useState<string>();
+  const [maskLevel, setMaskLevel] = useState(0);
+  const [maskOrder, setMaskOrder] = useState(
+    shuffle(enabledKeys.map((k, i) => i)),
+  );
+  useEffect(() => {
+    setMaskLevel(0);
+    setMaskOrder(shuffle(enabledKeys.map((k, i) => i)));
+  }, [randomLayout]);
+  const mask = useMemo(() => {
+    const mask = maskOrder.map(() => false);
+    for (const i of maskOrder.slice(0, maskLevel)) {
+      mask[i] = true;
+    }
+    return mask;
+  }, [maskLevel, maskOrder]);
+
+  const [history, setHistory] = useState<
+    { expectedLetter: String; actualLetter: string | undefined }[]
+  >([]);
+  useEffect(() => {
+    setHistory([]);
+  }, [randomLayout]);
+  const pressedLetter = last(history)?.actualLetter;
 
   const onKeyDown = (ev: React.KeyboardEvent<HTMLDivElement>) => {
     ev.preventDefault();
     ev.stopPropagation();
 
     const letter = randomLayout.get(ev.code);
-    setPressedLetter(letter);
+    setHistory((h) => [...h, { expectedLetter, actualLetter: letter }]);
     if (letter === expectedLetter) {
       _setExpectedLetter(
         pickRandomMapEntry(randomLayout, ([_c, l]) => l !== letter)[1],
       );
+      if (
+        maskLevel < enabledKeys.length &&
+        randomLayout.get(enabledKeys[maskOrder[maskLevel]]) === letter
+      ) {
+        setMaskLevel(maskLevel + 1);
+      }
+    } else {
+      setMaskLevel(Math.max(0, maskLevel - 1));
     }
   };
 
@@ -82,11 +112,27 @@ export const App = () => {
     <div>
       <HomeRow
         letters={enabledKeys.map((k) => randomLayout.get(k)!)}
+        mask={mask}
         expectedLetter={expectedLetter}
         pressedLetter={pressedLetter}
       />
       <div>Expected: {expectedLetter}</div>
-      <div>Pressed: {pressedLetter}</div>
+      <div>
+        History:{" "}
+        {history
+          .map((h, i) => ({ h, i }))
+          .slice(-10)
+          .map(({ h, i }) => (
+            <span
+              key={i}
+              style={{
+                color: h.actualLetter === h.expectedLetter ? "green" : "red",
+              }}
+            >
+              {h.actualLetter || "?"}
+            </span>
+          ))}
+      </div>
       <div tabIndex={0} className={styles.typingArea} onKeyDown={onKeyDown}>
         Type here
       </div>

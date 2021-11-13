@@ -16,13 +16,22 @@ const styles = {
 
 interface Props {
   letters: string[];
+  mask: boolean[];
   expectedLetter: string;
   pressedLetter: string | undefined;
 }
 
-export const HomeRow = ({ letters, expectedLetter, pressedLetter }: Props) => {
+export const HomeRow = ({
+  letters,
+  mask,
+  expectedLetter,
+  pressedLetter,
+}: Props) => {
   if (letters.length !== 10) {
     throw new Error("unexpected number of letters");
+  }
+  if (mask.length !== letters.length) {
+    throw new Error("invalid mask");
   }
 
   return (
@@ -31,24 +40,28 @@ export const HomeRow = ({ letters, expectedLetter, pressedLetter }: Props) => {
         [0, 4],
         [4, 6],
         [6, 10],
-      ].map(([start, end], i) => (
-        <div key={i} className={styles.group}>
-          {letters.slice(start, end).map((letter, j) => (
-            <div
-              key={j + start}
-              className={styles.key}
-              style={{
-                background:
-                  letter === pressedLetter
-                    ? "grey"
-                    : letter === expectedLetter
-                    ? "green"
-                    : undefined,
-              }}
-            >
-              {letter}
-            </div>
-          ))}
+      ].map(([start, end], iGroup) => (
+        <div key={iGroup} className={styles.group}>
+          {letters.slice(start, end).map((letter, iKeyInGroup) => {
+            const iKey = start + iKeyInGroup;
+            const hide = mask[iKey];
+            return (
+              <div
+                key={iKey}
+                className={styles.key}
+                style={{
+                  background:
+                    letter === pressedLetter
+                      ? "grey"
+                      : letter === expectedLetter && !hide
+                      ? "green"
+                      : undefined,
+                }}
+              >
+                {hide ? "?" : letter}
+              </div>
+            );
+          })}
         </div>
       ))}
     </div>
