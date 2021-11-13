@@ -69,7 +69,11 @@ export const HomeRow = ({
                       : undefined,
                 }}
               >
-                {hide ? "?" : letter}
+                {hide ? (
+                  <span style={{ opacity: 0.2 }}>?</span>
+                ) : (
+                  <span>{letter}</span>
+                )}
               </div>
             );
           })}
