@@ -17,6 +17,9 @@ const styles = {
       opacity: 0.5;
     }
   `,
+  expectedLetter: css`
+    font-size: 40px;
+  `,
 };
 
 const enabledKeys = [
@@ -80,7 +83,11 @@ export const App = () => {
   }, [maskLevel, maskOrder]);
 
   const [history, setHistory] = useState<
-    { expectedLetter: String; actualLetter: string | undefined }[]
+    {
+      expectedLetter: String;
+      actualLetter: string | undefined;
+      masked: boolean;
+    }[]
   >([]);
   useEffect(() => {
     setHistory([]);
@@ -92,7 +99,17 @@ export const App = () => {
     ev.stopPropagation();
 
     const letter = randomLayout.get(ev.code);
-    setHistory((h) => [...h, { expectedLetter, actualLetter: letter }]);
+    const expectedLetterIndex = enabledKeys
+      .map((k) => randomLayout.get(k))
+      .indexOf(expectedLetter);
+    setHistory((h) => [
+      ...h,
+      {
+        expectedLetter,
+        actualLetter: letter,
+        masked: expectedLetterIndex !== -1 && mask[expectedLetterIndex],
+      },
+    ]);
     if (letter === expectedLetter) {
       _setExpectedLetter(
         pickRandomMapEntry(randomLayout, ([_c, l]) => l !== letter)[1],
@@ -116,7 +133,7 @@ export const App = () => {
         expectedLetter={expectedLetter}
         pressedLetter={pressedLetter}
       />
-      <div>Expected: {expectedLetter}</div>
+      <div className={styles.expectedLetter}>{expectedLetter}</div>
       <div>
         History:{" "}
         {history
@@ -127,6 +144,7 @@ export const App = () => {
               key={i}
               style={{
                 color: h.actualLetter === h.expectedLetter ? "green" : "red",
+                textDecoration: h.masked ? "underline" : undefined,
               }}
             >
               {h.actualLetter || "?"}
