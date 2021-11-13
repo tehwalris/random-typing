@@ -35,6 +35,12 @@ const styles = {
   `,
 };
 
+interface HistoryEntry {
+  expectedLetter: String;
+  actualLetter: string | undefined;
+  masked: boolean;
+}
+
 const enabledKeys = [
   "KeyA",
   "KeyS",
@@ -52,6 +58,9 @@ const alphabet: string[] = [];
 for (let i = "a".charCodeAt(0); i <= "z".charCodeAt(0); i++) {
   alphabet.push(String.fromCharCode(i).toUpperCase());
 }
+
+const streakToHide = 3;
+const streakToWin = 10;
 
 function pickRandomMapEntry<K, V>(
   map: Map<K, V>,
@@ -79,71 +88,64 @@ export const App = () => {
     [_expectedLetter, randomLayout],
   );
 
-  const [maskLevel, setMaskLevel] = useState(0);
-  const [maskOrder, setMaskOrder] = useState(
-    shuffle(enabledKeys.map((k, i) => i)),
-  );
-  useEffect(() => {
-    setMaskLevel(0);
-    setMaskOrder(shuffle(enabledKeys.map((k, i) => i)));
-  }, [randomLayout]);
-  const mask = useMemo(() => {
-    const mask = maskOrder.map(() => false);
-    for (const i of maskOrder.slice(0, maskLevel)) {
-      mask[i] = true;
-    }
-    return mask;
-  }, [maskLevel, maskOrder]);
+  const [mask, setMask] = useState(() => enabledKeys.map(() => false));
 
-  const [history, setHistory] = useState<
-    {
-      expectedLetter: String;
-      actualLetter: string | undefined;
-      masked: boolean;
-    }[]
-  >([]);
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
   useEffect(() => {
     setHistory([]);
   }, [randomLayout]);
   const pressedLetter = last(history)?.actualLetter;
 
   const onKeyDown = (ev: React.KeyboardEvent<HTMLDivElement>) => {
-    ev.preventDefault();
-    ev.stopPropagation();
-
-    const letter = randomLayout.get(ev.code);
+    const actualLetter = randomLayout.get(ev.code);
+    const actualLetterIndex = enabledKeys.indexOf(ev.code);
     const expectedLetterIndex = enabledKeys
       .map((k) => randomLayout.get(k))
       .indexOf(expectedLetter);
-    setHistory((h) => [
-      ...h,
+    if (
+      actualLetter === undefined ||
+      actualLetterIndex === -1 ||
+      expectedLetterIndex === -1
+    ) {
+      return;
+    }
+
+    ev.preventDefault();
+    ev.stopPropagation();
+
+    const newHistory: HistoryEntry[] = [
+      ...history,
       {
         expectedLetter,
-        actualLetter: letter,
+        actualLetter: actualLetter,
         masked: expectedLetterIndex !== -1 && mask[expectedLetterIndex],
       },
-    ]);
-    if (letter === expectedLetter) {
+    ];
+    setHistory(newHistory);
+
+    const latestActualHistory = newHistory
+      .filter((h) => h.actualLetter === actualLetter)
+      .slice(-streakToHide);
+    const newMaskValue =
+      latestActualHistory.length === streakToHide &&
+      latestActualHistory.every((h) => h.actualLetter === h.expectedLetter);
+
+    const newMask: boolean[] = [...mask];
+    newMask[actualLetterIndex] = newMaskValue;
+    setMask(newMask);
+
+    if (actualLetter === expectedLetter) {
       _setExpectedLetter(
-        pickRandomMapEntry(randomLayout, ([_c, l]) => l !== letter)[1],
+        pickRandomMapEntry(randomLayout, ([_c, l]) => l !== actualLetter)[1],
       );
-      if (
-        maskLevel < enabledKeys.length &&
-        randomLayout.get(enabledKeys[maskOrder[maskLevel]]) === letter
-      ) {
-        setMaskLevel(maskLevel + 1);
-      }
-    } else {
-      setMaskLevel(Math.max(0, maskLevel - 1));
     }
   };
 
   useEffect(() => {
-    const requiredCount = 10;
-    const lastHistory = history.slice(-requiredCount);
+    const lastHistory = history.slice(-streakToWin);
     if (
       !mask.every((v) => v) ||
-      lastHistory.length < requiredCount ||
+      lastHistory.length < streakToWin ||
       !lastHistory.every((h) => h.actualLetter === h.expectedLetter && h.masked)
     ) {
       return;
@@ -164,7 +166,7 @@ export const App = () => {
         {!history.length && <>&nbsp;</>}
         {history
           .map((h, i) => ({ h, i }))
-          .slice(-10)
+          .slice(-streakToWin)
           .map(({ h, i }) => (
             <span
               key={i}
