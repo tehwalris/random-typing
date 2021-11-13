@@ -142,13 +142,14 @@ export const App = () => {
     const requiredCount = 10;
     const lastHistory = history.slice(-requiredCount);
     if (
+      !mask.every((v) => v) ||
       lastHistory.length < requiredCount ||
       !lastHistory.every((h) => h.actualLetter === h.expectedLetter && h.masked)
     ) {
       return;
     }
     alert("You won!");
-  }, [history]);
+  }, [history, mask]);
 
   return (
     <div className={styles.wrapper}>
