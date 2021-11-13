@@ -6,6 +6,15 @@ import { useEffect, useMemo, useState } from "react";
 import { HomeRow } from "./home-row";
 
 const styles = {
+  wrapper: css`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 30px;
+  `,
+  history: css`
+    margin-top: 10px;
+  `,
   typingArea: css`
     display: inline-block;
 
@@ -19,6 +28,10 @@ const styles = {
   `,
   expectedLetter: css`
     font-size: 40px;
+    margin-bottom: 20px;
+  `,
+  progress: css`
+    width: 575px;
   `,
 };
 
@@ -37,7 +50,7 @@ const enabledKeys = [
 
 const alphabet: string[] = [];
 for (let i = "a".charCodeAt(0); i <= "z".charCodeAt(0); i++) {
-  alphabet.push(String.fromCharCode(i));
+  alphabet.push(String.fromCharCode(i).toUpperCase());
 }
 
 function pickRandomMapEntry<K, V>(
@@ -125,17 +138,29 @@ export const App = () => {
     }
   };
 
+  useEffect(() => {
+    const requiredCount = 10;
+    const lastHistory = history.slice(-requiredCount);
+    if (
+      lastHistory.length < requiredCount ||
+      !lastHistory.every((h) => h.actualLetter === h.expectedLetter && h.masked)
+    ) {
+      return;
+    }
+    alert("You won!");
+  }, [history]);
+
   return (
-    <div>
+    <div className={styles.wrapper}>
+      <div className={styles.expectedLetter}>{expectedLetter}</div>
       <HomeRow
         letters={enabledKeys.map((k) => randomLayout.get(k)!)}
         mask={mask}
         expectedLetter={expectedLetter}
         pressedLetter={pressedLetter}
       />
-      <div className={styles.expectedLetter}>{expectedLetter}</div>
-      <div>
-        History:{" "}
+      <div className={styles.history}>
+        {!history.length && <>&nbsp;</>}
         {history
           .map((h, i) => ({ h, i }))
           .slice(-10)
@@ -150,6 +175,13 @@ export const App = () => {
               {h.actualLetter || "?"}
             </span>
           ))}
+      </div>
+      <div>
+        <progress
+          className={styles.progress}
+          value={mask.filter((v) => v).length}
+          max={enabledKeys.length}
+        />
       </div>
       <div tabIndex={0} className={styles.typingArea} onKeyDown={onKeyDown}>
         Type here

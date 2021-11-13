@@ -4,13 +4,24 @@ const styles = {
   group: css`
     margin-right: 15px;
     display: inline-block;
+
+    &:last-child {
+      margin-right: 0;
+    }
   `,
   key: css`
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
     margin-right: 5px;
     width: 50px;
     height: 50px;
     border: 1px solid black;
+
+    &:last-child {
+      margin-right: 0;
+    }
   `,
 };
 
@@ -52,9 +63,9 @@ export const HomeRow = ({
                 style={{
                   background:
                     letter === pressedLetter
-                      ? "grey"
+                      ? "rgba(0, 0, 0, 0.15)"
                       : letter === expectedLetter && !hide
-                      ? "green"
+                      ? "rgba(0, 20, 255, 0.4)"
                       : undefined,
                 }}
               >
