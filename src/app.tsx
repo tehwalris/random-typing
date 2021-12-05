@@ -1,6 +1,6 @@
 import { css } from "@emotion/css";
 import { sample, shuffle } from "lodash";
-import { zip, last } from "ramda";
+import { last, zip } from "ramda";
 import * as React from "react";
 import { useEffect, useMemo, useState } from "react";
 import { keySpacingPx, keyWidthPx, Row } from "./row";
