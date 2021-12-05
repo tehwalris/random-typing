@@ -3,7 +3,7 @@ import { sample, shuffle } from "lodash";
 import { zip, last } from "ramda";
 import * as React from "react";
 import { useEffect, useMemo, useState } from "react";
-import { Row } from "./row";
+import { keySpacingPx, keyWidthPx, Row } from "./row";
 
 const styles = {
   wrapper: css`
@@ -37,6 +37,10 @@ const styles = {
     display: flex;
     flex-direction: column;
     align-items: center;
+
+    & > div:first-child {
+      margin-right: ${keyWidthPx + keySpacingPx}px;
+    }
 
     & > div:not(:last-child) {
       margin-bottom: 5px;
@@ -216,7 +220,7 @@ export const App = () => {
     <div className={styles.wrapper}>
       <div className={styles.expectedLetter}>{expectedLetter}</div>
       <div className={styles.rows}>
-        {renderRow(0, [4, 2, 4])}
+        {renderRow(0, [5, 1, 4])}
         {renderRow(1, [4, 2, 4])}
         {renderRow(2, [4, 1, 4])}
       </div>
