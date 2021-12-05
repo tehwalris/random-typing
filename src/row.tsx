@@ -1,4 +1,5 @@
 import { css } from "@emotion/css";
+import { sum } from "ramda";
 
 const styles = {
   group: css`
@@ -28,30 +29,39 @@ const styles = {
 interface Props {
   letters: string[];
   mask: boolean[];
+  groupLengths: number[];
   expectedLetter: string;
   pressedLetter: string | undefined;
 }
 
-export const HomeRow = ({
+export const Row = ({
   letters,
   mask,
+  groupLengths,
   expectedLetter,
   pressedLetter,
 }: Props) => {
-  if (letters.length !== 10) {
+  const totalLength = sum(groupLengths);
+
+  if (letters.length !== totalLength) {
     throw new Error("unexpected number of letters");
   }
-  if (mask.length !== letters.length) {
+  if (mask.length !== totalLength) {
     throw new Error("invalid mask");
+  }
+
+  const groupRanges: [number, number][] = [];
+  {
+    let i = 0;
+    for (const l of groupLengths) {
+      groupRanges.push([i, i + l]);
+      i += l;
+    }
   }
 
   return (
     <div>
-      {[
-        [0, 4],
-        [4, 6],
-        [6, 10],
-      ].map(([start, end], iGroup) => (
+      {groupRanges.map(([start, end], iGroup) => (
         <div key={iGroup} className={styles.group}>
           {letters.slice(start, end).map((letter, iKeyInGroup) => {
             const iKey = start + iKeyInGroup;

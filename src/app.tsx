@@ -3,7 +3,7 @@ import { sample, shuffle } from "lodash";
 import { zip, last } from "ramda";
 import * as React from "react";
 import { useEffect, useMemo, useState } from "react";
-import { HomeRow } from "./home-row";
+import { Row } from "./row";
 
 const styles = {
   wrapper: css`
@@ -33,6 +33,15 @@ const styles = {
   progress: css`
     width: 575px;
   `,
+  rows: css`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    & > div:not(:last-child) {
+      margin-bottom: 5px;
+    }
+  `,
 };
 
 interface HistoryEntry {
@@ -41,23 +50,41 @@ interface HistoryEntry {
   masked: boolean;
 }
 
-const enabledKeys = [
-  "KeyA",
-  "KeyS",
-  "KeyD",
-  "KeyF",
-  "KeyG",
-  "KeyH",
-  "KeyJ",
-  "KeyK",
-  "KeyL",
-  "Semicolon",
+const enabledKeysByRow: string[][] = [
+  [
+    "KeyQ",
+    "KeyW",
+    "KeyE",
+    "KeyR",
+    "KeyT",
+    "KeyY",
+    "KeyU",
+    "KeyI",
+    "KeyO",
+    "KeyP",
+  ],
+  [
+    "KeyA",
+    "KeyS",
+    "KeyD",
+    "KeyF",
+    "KeyG",
+    "KeyH",
+    "KeyJ",
+    "KeyK",
+    "KeyL",
+    "Semicolon",
+  ],
+  ["KeyZ", "KeyX", "KeyC", "KeyV", "KeyB", "KeyN", "KeyM", "Comma", "Period"],
 ];
+
+const enabledKeys = enabledKeysByRow.flat();
 
 const alphabet: string[] = [];
 for (let i = "a".charCodeAt(0); i <= "z".charCodeAt(0); i++) {
   alphabet.push(String.fromCharCode(i).toUpperCase());
 }
+alphabet.push(";", ",", "!");
 
 const streakToHide = 3;
 const streakToWin = 10;
@@ -173,15 +200,26 @@ export const App = () => {
     alert("You won!");
   }, [history, mask]);
 
+  const renderRow = (rowIndex: number, groupLengths: number[]) => (
+    <Row
+      letters={enabledKeysByRow[rowIndex].map((k) => randomLayout.get(k)!)}
+      mask={enabledKeysByRow[rowIndex]
+        .map((k) => enabledKeys.indexOf(k))
+        .map((i) => mask[i])}
+      groupLengths={groupLengths}
+      expectedLetter={expectedLetter}
+      pressedLetter={pressedLetter}
+    />
+  );
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.expectedLetter}>{expectedLetter}</div>
-      <HomeRow
-        letters={enabledKeys.map((k) => randomLayout.get(k)!)}
-        mask={mask}
-        expectedLetter={expectedLetter}
-        pressedLetter={pressedLetter}
-      />
+      <div className={styles.rows}>
+        {renderRow(0, [4, 2, 4])}
+        {renderRow(1, [4, 2, 4])}
+        {renderRow(2, [4, 1, 4])}
+      </div>
       <div className={styles.history}>
         {!history.length && <>&nbsp;</>}
         {history
