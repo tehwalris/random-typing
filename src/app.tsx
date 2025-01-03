@@ -55,8 +55,6 @@ interface HistoryEntry {
   masked: boolean;
 }
 
-type GameMode = "full" | "homerow";
-
 const keyboardLayouts = {
   full: [
     [
