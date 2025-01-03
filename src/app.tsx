@@ -3,6 +3,7 @@ import { sample, shuffle } from "lodash";
 import { last, zip } from "ramda";
 import * as React from "react";
 import { useEffect, useMemo, useState } from "react";
+import { GameMode, ModeSelector } from "./mode-selector";
 import { keySpacingPx, keyWidthPx, Row } from "./row";
 
 const styles = {
@@ -54,35 +55,55 @@ interface HistoryEntry {
   masked: boolean;
 }
 
-const enabledKeysByRow: string[][] = [
-  [
-    "KeyQ",
-    "KeyW",
-    "KeyE",
-    "KeyR",
-    "KeyT",
-    "KeyY",
-    "KeyU",
-    "KeyI",
-    "KeyO",
-    "KeyP",
-  ],
-  [
-    "KeyA",
-    "KeyS",
-    "KeyD",
-    "KeyF",
-    "KeyG",
-    "KeyH",
-    "KeyJ",
-    "KeyK",
-    "KeyL",
-    "Semicolon",
-  ],
-  ["KeyZ", "KeyX", "KeyC", "KeyV", "KeyB", "KeyN", "KeyM", "Comma", "Period"],
-];
+type GameMode = "full" | "homerow";
 
-const enabledKeys = enabledKeysByRow.flat();
+const keyboardLayouts = {
+  full: [
+    [
+      "KeyQ",
+      "KeyW",
+      "KeyE",
+      "KeyR",
+      "KeyT",
+      "KeyY",
+      "KeyU",
+      "KeyI",
+      "KeyO",
+      "KeyP",
+    ],
+    [
+      "KeyA",
+      "KeyS",
+      "KeyD",
+      "KeyF",
+      "KeyG",
+      "KeyH",
+      "KeyJ",
+      "KeyK",
+      "KeyL",
+      "Semicolon",
+    ],
+    ["KeyZ", "KeyX", "KeyC", "KeyV", "KeyB", "KeyN", "KeyM", "Comma", "Period"],
+  ],
+  homerow: [
+    [],
+    [
+      "KeyA",
+      "KeyS",
+      "KeyD",
+      "KeyF",
+      "KeyG",
+      "KeyH",
+      "KeyJ",
+      "KeyK",
+      "KeyL",
+      "Semicolon",
+    ],
+    [],
+  ],
+};
+
+const getEnabledKeys = (mode: GameMode) => keyboardLayouts[mode].flat();
 
 const alphabet: string[] = [];
 for (let i = "a".charCodeAt(0); i <= "z".charCodeAt(0); i++) {
@@ -121,9 +142,11 @@ function pickMaskWeightedEntry(
 }
 
 export const App = () => {
+  const [mode, setMode] = useState<GameMode>();
+  const enabledKeys = mode ? getEnabledKeys(mode) : [];
   const randomLayout = useMemo(
     () => new Map<string, string>(zip(enabledKeys, shuffle(alphabet))),
-    [],
+    [mode],
   );
 
   const [_expectedLetter, _setExpectedLetter] = useState<string>();
@@ -216,13 +239,17 @@ export const App = () => {
     />
   );
 
+  if (!mode) {
+    return <ModeSelector onSelect={setMode} />;
+  }
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.expectedLetter}>{expectedLetter}</div>
       <div className={styles.rows}>
-        {renderRow(0, [5, 1, 4])}
+        {mode === "full" && renderRow(0, [5, 1, 4])}
         {renderRow(1, [4, 2, 4])}
-        {renderRow(2, [4, 1, 4])}
+        {mode === "full" && renderRow(2, [4, 1, 4])}
       </div>
       <div className={styles.history}>
         {!history.length && <>&nbsp;</>}
